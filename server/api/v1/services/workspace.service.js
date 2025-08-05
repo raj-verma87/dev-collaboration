@@ -6,7 +6,7 @@ const createWorkspace = async ({name, userId})=> {
     const workspace = await Workspace.create({
         name,
         owner: userId,
-        members: [userId]
+        members: [{ user: userId, role: "owner" }],
     });
     return workspace;
 };
@@ -15,19 +15,31 @@ const getUserWorkspaces = async ({userId})=> {
     return await Workspace.find({members: userId}).populate('owner', "name email");
 };
 
-const inviteToWorkSpace = async({workspaceId, userIdToInvite, requestingUserId})=> {
-    const workspace = await Workspace.findById(workspaceId);
-    if(!workspace)throw new AppError(ERROR_MESSAGES.WORKSPACE.NOT_FOUND,404);
+const inviteToWorkSpace = async ({ workspaceId, userIdToInvite, requestingUserId }) => {
+  const workspace = await Workspace.findById(workspaceId);
+  
+  if (!workspace) throw new Error("Workspace not found");
 
-    if(!workspace.owner.equals(requestingUserId)){
-        throw new AppError(ERROR_MESSAGES.WORKSPACE.OWNER_INVITE,404);
-    }
-    if(!workspace.members.includes(userIdToInvite)){
-        workspace.members.push(userIdToInvite);
-        await workspace.save();
-    }
-    return workspace;
+  const requester = workspace.members.find(
+    (m) => m.user.toString() === requestingUserId.toString()
+  );
+
+  if (!requester || requester.role !== "owner") {
+    throw new Error("Only workspace owner can invite members");
+  }
+
+  const alreadyMember = workspace.members.find(
+    (m) => m.user.toString() === userIdToInvite
+  );
+
+  if (!alreadyMember) {
+    workspace.members.push({ user: userIdToInvite, role: "member" });
+    await workspace.save();
+  }
+
+  return workspace;
 };
+
 
 module.exports = {
     createWorkspace,
