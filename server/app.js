@@ -3,6 +3,7 @@ const cors = require('cors');
 const app = express();
 const router = require('./api/v1/routes/auth.routes');
 const errorMiddleware = require('./api/v1/middlewares/error.middleware');
+const workspaceRoutes = require("./api/v1/routes/workspace.routes");
 
 app.use(express.json());
 app.use(cors());
@@ -18,6 +19,7 @@ app.get("/health", (req, res) => {
 });
 
 app.use('/api/v1/auth',router);
+app.use("/api/v1/workspaces", workspaceRoutes);
 
 app.use((req,res)=> res.status(400).json({message: "route not found!"}));
 

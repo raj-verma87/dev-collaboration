@@ -1,3 +1,5 @@
+const { NOT_FOUND } = require("./statusCodes");
+
 const ERROR_MESSAGES = {
   AUTH: {
     EMAIL_EXISTS: "Email already exists",
@@ -20,6 +22,8 @@ const ERROR_MESSAGES = {
   WORKSPACE: {
     ALREADY_MEMBER: "User is already a member of this workspace",
     NOT_MEMBER: "You are not a member of this workspace",
+    NOT_FOUND: "Workspace not found",
+    OWNER_INVITE: "Only workspace owner can invite users"
   },
   VALIDATION: {
     INVALID_EMAIL: "Email format is invalid",
