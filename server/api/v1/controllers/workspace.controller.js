@@ -40,10 +40,41 @@ const invite = async (req, res)=> {
   });
 };
 
+const removeMember = async (req, res) => {
+  try {
+    const { workspaceId, userIdToRemove } = req.body;
+    const workspace = await workspaceService.removeMember({
+      workspaceId,
+      userIdToRemove,
+      requestingUserId: req.user._id
+    });
+    res.json({ message: "Member removed", workspace });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+const changeRole = async (req, res) => {
+  try {
+    const { workspaceId, userIdToUpdate, newRole } = req.body;
+    const workspace = await workspaceService.changeMemberRole({
+      workspaceId,
+      userIdToUpdate,
+      newRole,
+      requestingUserId: req.user._id
+    });
+    res.json({ message: "Role updated", workspace });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
 module.exports = {
   create,
   getAll,
   invite,
+  removeMember,
+  changeRole
 };
 
 
